@@ -1,5 +1,37 @@
 {
-  "enabledPlugins": {
-    "expo@claude-plugins-official": true
+  "permissions": {
+    "deny": [
+      "Read(**/.env*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*firebase-adminsdk*.json)",
+      "Read(**/*.keystore)",
+      "Read(**/*.jks)",
+      "Edit(./.claude/**)",
+      "Bash(sudo *)",
+      "Bash(rm -rf *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(npm install *)",
+      "Bash(npm i *)",
+      "Bash(eas *)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "allowUnsandboxedCommands": false,
+    "blockReadsOutsideWorkingDirectories": true,
+    "filesystem": {
+      "denyRead": ["~/"],
+      "allowRead": ["."]
+    },
+    "network": {
+      "allowedDomains": ["20-gestor-de-contrasenas-api.vercel.app"]
+    }
   }
 }
