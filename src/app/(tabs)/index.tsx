@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import {
   View,
   Text,
+  TextInput,
   FlatList,
   Pressable,
   StyleSheet,
@@ -10,17 +11,21 @@ import {
 import { useFocusEffect, useRouter } from "expo-router";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import {
+  insertCuenta,
   listCuentas,
   softDeleteCuenta,
   type CuentaRow,
 } from "@/repositories/cuentaRepository";
-import { decryptSecret } from "@/services/crypto";
+import { decryptSecret, encryptSecret } from "@/services/crypto";
 import { getMasterKey } from "@/services/vaultSession";
 import { copyWithAutoClear } from "@/services/clipboard";
 
 export default function CuentasScreen() {
   const router = useRouter();
   const [cuentas, setCuentas] = useState<CuentaRow[]>([]);
+  const [sitio, setSitio] = useState("");
+  const [usuario, setUsuario] = useState("");
+  const [clave, setClave] = useState("");
 
   const load = useCallback(async () => {
     const rows = await listCuentas();
@@ -49,8 +54,60 @@ export default function CuentasScreen() {
     await load();
   }
 
+  async function handleAdd() {
+    const key = getMasterKey();
+    if (!key) {
+      router.replace("/bloqueo");
+      return;
+    }
+    if (!sitio.trim() || !usuario.trim() || !clave) {
+      Alert.alert("Campos requeridos", "Completa sitio, usuario y clave.");
+      return;
+    }
+    const enc = await encryptSecret(clave, key);
+    await insertCuenta({
+      sitio: sitio.trim(),
+      usuario: usuario.trim(),
+      clave_cifrada: enc.cipherText,
+      iv: enc.iv,
+      notas: null,
+    });
+    setSitio("");
+    setUsuario("");
+    setClave("");
+    await load();
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.form}>
+        <TextInput
+          style={styles.input}
+          placeholder="Sitio (ej. Gmail)"
+          value={sitio}
+          onChangeText={setSitio}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Usuario / Correo"
+          value={usuario}
+          onChangeText={setUsuario}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          secureTextEntry
+          value={clave}
+          onChangeText={setClave}
+        />
+        <Pressable
+          style={styles.addBtn}
+          onPress={() => void handleAdd()}
+          accessibilityLabel="Guardar nueva cuenta"
+        >
+          <Text style={styles.addBtnText}>+ Guardar cuenta</Text>
+        </Pressable>
+      </View>
       <FlatList
         data={cuentas}
         keyExtractor={(item) => String(item.id)}
@@ -93,6 +150,10 @@ export default function CuentasScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
+  form: { gap: 8, marginBottom: 14 },
+  input: { borderWidth: 1, borderColor: "#d1d5db", borderRadius: 8, padding: 10 },
+  addBtn: { backgroundColor: "#111827", padding: 12, borderRadius: 8, alignItems: "center" },
+  addBtnText: { color: "#fff", fontWeight: "600" },
   empty: { textAlign: "center", marginTop: 32, color: "#6b7280" },
   card: {
     padding: 14,
