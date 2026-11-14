@@ -1,18 +1,36 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useColorScheme } from "react-native";
+import { useEffect } from "react";
+import { AppState } from "react-native";
+import { Stack, useRouter } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { lockVault } from "@/services/vaultSession";
 
-import { AnimatedSplashOverlay } from "@/components/animated-icon";
-import AppTabs from "@/components/app-tabs";
+export default function RootLayout() {
+  const router = useRouter();
 
-SplashScreen.preventAutoHideAsync();
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "background" || nextState === "inactive") {
+        lockVault();
+        router.replace("/bloqueo");
+      }
+    });
+    return () => sub.remove();
+  }, [router]);
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: true }}>
+        <Stack.Screen
+          name="bloqueo"
+          options={{ title: "Desbloquear bóveda" }}
+        />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="cuenta/[id]"
+          options={{ title: "Detalle de cuenta" }}
+        />
+        <Stack.Screen name="ajustes" options={{ title: "Ajustes" }} />
+      </Stack>
+    </GestureHandlerRootView>
   );
 }
