@@ -65,7 +65,9 @@ const moveDirectories = async (userInput) => {
     if (userInput === "y") {
       // Create the app-example directory
       await fs.promises.mkdir(exampleDirPath, { recursive: true });
-      await fs.promises.mkdir(path.join(exampleDirPath, "assets/images"), { recursive: true });
+      await fs.promises.mkdir(path.join(exampleDirPath, "assets/images"), {
+        recursive: true,
+      });
       console.log(`📁 /${exampleDir} directory created.`);
     }
 
@@ -91,7 +93,11 @@ const moveDirectories = async (userInput) => {
       const assetPath = path.join(root, "assets/images", asset);
       if (fs.existsSync(assetPath)) {
         if (userInput === "y") {
-          const newAssetPath = path.join(exampleDirPath, "assets/images", asset);
+          const newAssetPath = path.join(
+            exampleDirPath,
+            "assets/images",
+            asset
+          );
           await fs.promises.rename(assetPath, newAssetPath);
           console.log(
             `➡️ /assets/images/${asset} moved to /${exampleDir}/assets/images/${asset}.`
