@@ -79,7 +79,7 @@ export async function checkPasswordBreach(
     throw new Error("No se pudo verificar filtraciones");
   }
   const data = (await res.json()) as {
-    sufijos: Array<{ sufijo: string; conteo: number }>;
+    sufijos: { sufijo: string; conteo: number }[];
   };
   const match = data.sufijos.find((item) => item.sufijo === suffix);
   return { compromised: Boolean(match), count: match?.conteo ?? 0 };
