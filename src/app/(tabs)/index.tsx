@@ -151,8 +151,18 @@ export default function CuentasScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   form: { gap: 8, marginBottom: 14 },
-  input: { borderWidth: 1, borderColor: "#d1d5db", borderRadius: 8, padding: 10 },
-  addBtn: { backgroundColor: "#111827", padding: 12, borderRadius: 8, alignItems: "center" },
+  input: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 8,
+    padding: 10,
+  },
+  addBtn: {
+    backgroundColor: "#111827",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
   addBtnText: { color: "#fff", fontWeight: "600" },
   empty: { textAlign: "center", marginTop: 32, color: "#6b7280" },
   card: {
