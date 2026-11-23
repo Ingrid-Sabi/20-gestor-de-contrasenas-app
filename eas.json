@@ -12,6 +12,9 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://20-gestor-de-contrasenas-api.vercel.app"
       }
     },
     "production": {}
